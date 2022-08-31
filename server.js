@@ -16,3 +16,23 @@ MongoClient.connect(process.env.MONGO_URI, function (err, client) {
     console.log('server opened');
   });
 });
+
+app.get('/diary', async function (req, res) {
+  try {
+    let result = await db.collection('diaryList').find().toArray();
+    res.json(result);
+  } catch (err) {
+    res.json({ message: 'FAIL' });
+  }
+});
+
+app.get('/diary/:id', async function (req, res) {
+  let id = parseInt(req.params.id);
+  try {
+    let result = await db.collection('diaryList').findOne({ _id: id });
+    if (result == null) throw new Error('no exist diary');
+    else res.json(result);
+  } catch (err) {
+    return res.sendStatus(400);
+  }
+});
