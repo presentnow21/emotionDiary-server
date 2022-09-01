@@ -22,7 +22,7 @@ app.get('/diary', async function (req, res) {
     let result = await db.collection('diaryList').find().toArray();
     res.json(result);
   } catch (err) {
-    res.json({ message: 'FAIL' });
+    return err;
   }
 });
 
@@ -34,5 +34,28 @@ app.get('/diary/:id', async function (req, res) {
     else res.json(result);
   } catch (err) {
     return res.sendStatus(400);
+  }
+});
+
+app.post('/diary', async function (req, res) {
+  try {
+    let diaryListLength = await db
+      .collection('number')
+      .findOne({ name: 'diaryList' });
+    diaryListLength = diaryListLength.length;
+
+    await db
+      .collection('diaryList')
+      .insertOne({ _id: diaryListLength, ...req.body });
+    res.json({ _id: diaryListLength });
+
+    await db
+      .collection('number')
+      .updateOne(
+        { name: 'diaryList' },
+        { $set: { length: diaryListLength + 1 } }
+      );
+  } catch (err) {
+    return err;
   }
 });
