@@ -44,18 +44,26 @@ app.post('/diary', async function (req, res) {
       .findOne({ name: 'diaryList' });
     diaryListLength = diaryListLength.length;
 
-    await db
-      .collection('diaryList')
-      .insertOne({ _id: diaryListLength, ...req.body });
+    db.collection('diaryList').insertOne({ _id: diaryListLength, ...req.body });
     res.json({ _id: diaryListLength });
 
-    await db
-      .collection('number')
-      .updateOne(
-        { name: 'diaryList' },
-        { $set: { length: diaryListLength + 1 } }
-      );
+    db.collection('number').updateOne(
+      { name: 'diaryList' },
+      { $set: { length: diaryListLength + 1 } }
+    );
   } catch (err) {
     return err;
   }
 });
+
+app.delete('/diary/:id', function(req,res){
+  try{
+    let id = parseInt(req.params.id);
+    db.collection('diaryList').deleteOne({_id:id})
+    res.json({message:'DELETE_SUCCESS'})
+  }
+  catch(err){
+    res.json({message:'DELETE_FAIL'})
+    return err
+  }
+})
