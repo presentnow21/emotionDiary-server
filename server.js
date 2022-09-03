@@ -67,3 +67,16 @@ app.delete('/diary/:id', function(req,res){
     return err
   }
 })
+
+
+app.patch('/diary/:id',function(req,res){
+  try{
+    let id = parseInt(req.params.id);
+    db.collection('diaryList').updateOne({_id:id},{$set:req.body})
+    res.json({message:'UPDATE_SUCCESS'})
+  }
+  catch(err){
+    res.json({message:'UPDATE_FAIL'})
+    return err
+  }
+})
